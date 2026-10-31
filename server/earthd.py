@@ -5249,8 +5249,10 @@ class Connection:
                 self.send(self.s.cache.message())
             if self.s.areas is not None:            # the saved areas (the map's Places panel)
                 self.send(self.s.areas_message())
-            if self.s.update_check:
-                self.spawn(self.check_update())     # a newer version on GitHub: the mod says so (updates.py)
+            # a newer version on GitHub: the mod says so (updates.py); not when the player turned the check off on the
+            # settings page (its hello's updateCheck: false; GitHub #586)
+            if self.s.update_check and msg.get("updateCheck", True) is not False:
+                self.spawn(self.check_update())
             if getattr(self.s, "game_cpus", None):  # the game off the server's cores (cpupin.py)
                 n = cpupin.pin_game(self.s.game_cpus)
                 log.info("the game's %d %s on CPUs %s", n, "processes" if sys.platform == "win32" else "threads",

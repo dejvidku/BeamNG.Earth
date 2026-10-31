@@ -923,7 +923,8 @@ local function onMessage(msg)
       farGeo = roads.FAR_GEO,          -- (and the far buildings, skyline and far bridges: roads.lua)
       globalFar = farfield.GLOBAL_FAR,    -- (and the far field from level 3 up as global tiles: farfield.lua)
       trafficVisuals = M._trafficvisuals.PROTO,
-      readySet = 1 })      -- (it takes a built block near its target: follow.preferReady, 'terrain_ready_set')
+      readySet = 1,        -- (it takes a built block near its target: follow.preferReady, 'terrain_ready_set')
+      updateCheck = settings.get('updateCheck') ~= false })   -- (off: the app asks GitHub for no update, GitHub #586)
     setStatus('Connected to companion server')
   elseif t == '_disconnected' then
     st.pending, st.sessionId, st.terrainPending = nil, nil, nil
@@ -1790,7 +1791,8 @@ end
 -- page").
 M.RELEASES_URL = 'https://github.com/TecnaGamer/BeamNG.Earth/releases/latest'
 local function drawUpdateNotice()
-  if updateHidden or not updateInfo or settings.get('updateDismissed') == tostring(updateInfo.latest) then return end
+  if updateHidden or not updateInfo or settings.get('updateDismissed') == tostring(updateInfo.latest)
+    or settings.get('updateCheck') == false then return end
   local im = ui_imgui
   if not im then return end
   local vp = im.GetMainViewport()
