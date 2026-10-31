@@ -104,7 +104,9 @@ MOD_TO_SERVER = {
               # ... and the far field from level 3 up as global tiles (farfield.lua GLOBAL_FAR: select_global)
               "globalFar": F(int, OPT),
               # it takes a built block near its target (follow.preferReady: 'terrain_ready_set')
-              "readySet": F(int, OPT)},
+              "readySet": F(int, OPT),
+              # the settings page's "Check for updates" (false: the server asks GitHub for no update, GitHub #586)
+              "updateCheck": F(bool, OPT)},
     "prepare_anchor": {"requestId": F(int), "lat": F(NUM), "lon": F(NUM), "cx": F(NUM, OPT), "cy": F(NUM, OPT),
                        # 2026-10-22: the player's spot when not the origin (BeamMP: onto another player's anchor)
                        "px": F(NUM, OPT), "py": F(NUM, OPT),
@@ -1048,6 +1050,34 @@ class DeshadowHelloTest(test_server.ServerHarness):
         self.assertEqual(m["deshadow"], "full")
         self.assertIn("deshadow", SERVER_TO_MOD["hello"])
         self.assertIn(m["deshadow"], deshadowmod.MODES)
+
+
+class UpdateCheckHelloTest(test_server.ServerHarness):
+    """hello.updateCheck (the settings page's "Check for updates", GitHub #586): false, the server asks GitHub for no
+    update and sends none; absent or true, as before (updates.check, then an 'update' message when it is newer)."""
+
+    def test_update_check_off_asks_github_nothing(self):
+        asked = []
+
+        def check(current, net=None):
+            asked.append(current)
+            return {"current": "1.0.0", "latest": "9.9.9", "url": "https://example.invalid/releases"}
+        self.server.update_check = True
+        old = earthd.updatesmod.check
+        earthd.updatesmod.check = check
+        try:
+            self.c.send({"type": "hello", "protocol": 4, "format": self.MOD_FORMAT, "modVersion": "0.4.0",
+                         "updateCheck": False})
+            self.c.until(lambda m: m["type"] == "hello", 10)
+            with self.assertRaises(TimeoutError, msg="no update message with the check off"):
+                self.c.until(lambda m: m["type"] == "update", 1.5)
+            self.assertEqual(asked, [], "GitHub not asked")
+            self.c.send({"type": "hello", "protocol": 4, "format": self.MOD_FORMAT, "modVersion": "0.4.0"})
+            m, _ = self.c.until(lambda m: m["type"] == "update", 10)
+            self.assertEqual(m["latest"], "9.9.9", "(without the field: as before)")
+            self.assertEqual(len(asked), 1)
+        finally:
+            earthd.updatesmod.check = old
 
 
 class ColormatchHelloTest(test_server.ServerHarness):

@@ -93,6 +93,9 @@ M.SCHEMA = {
   -- BeamMP started by the BeamNG.Earth app with the game (launcher.py reads this file: bmplaunch.on_launch; its
   -- "don't ask again" writes it off)
   beammpOnLaunch = { kind = 'bool', default = true, label = 'Start BeamMP with BeamNG.Earth' },
+  -- the app asks GitHub for a newer version after each hello (server updates.py; GitHub #586: "disable update checking
+  -- completely"); off: the hello says so, no request and no update notice (core.lua)
+  updateCheck = { kind = 'bool', default = true, label = 'Check for updates' },
   -- the on-screen data credits (credits.lua): on by default, CC BY licences ask for visible attribution
   creditsVisible = { kind = 'bool', default = true, label = 'Data credits on screen' },
   creditsCorner = { kind = 'enum', default = 'bottom-left', values = credits.CORNERS, label = 'Data credits corner' },
@@ -120,7 +123,7 @@ M.ORDER = { 'quality', 'framePacing', 'terrainDetail', 'groundPhoto', 'trees', '
   'weatherMode', 'realGravity', 'groundCover', 'groundCoverDensity', 'rocks', 'roads', 'highwaySigns', 'dashboardSatellite',
   'hudVisible', 'statusBar',
   'placeNamesOnline', 'creditsVisible', 'beammpOnLaunch',
-  'creditsCorner', 'creditsSize', 'cacheCapGb', 'routeDownload', 'devOutlineKm', 'devMapKm' }
+  'creditsCorner', 'creditsSize', 'cacheCapGb', 'routeDownload', 'updateCheck', 'devOutlineKm', 'devMapKm' }
 
 -- Stored but not on the settings page
 M.HIDDEN = { welcomeSeen = true, updateDismissed = true, devNoticeSeen = true, qualityDetected = true }

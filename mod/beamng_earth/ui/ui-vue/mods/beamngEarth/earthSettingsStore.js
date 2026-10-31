@@ -97,6 +97,7 @@ export const settingsSchema = [
   {
     name: "About",
     items: [
+      { id: "updateCheck", type: "bool", default: true, name: "Check for updates", desc: "The app asks GitHub for a newer version each time the game connects to it, and a notice offers to update. Off: no check and no notice (you update from the releases page yourself)." },
       { id: "connection", type: "info", name: "Companion app", desc: "The connection to the BeamNG.Earth app (127.0.0.1:47613) that builds the world, and the session id it gave this game." },
       { id: "anchor", type: "info", name: "World origin", desc: "The current world origin (anchor) and its latitude / longitude. A rebase moves it under you." },
       { id: "player", type: "info", name: "Your position", desc: "Your latitude / longitude and the distance from the world origin." },

@@ -406,6 +406,15 @@ do
   T.check(st.HIDDEN.updateDismissed, 'updateDismissed: not on the settings page')
 end
 
+-- "Check for updates" (GitHub #586): a switch on the page, on by default (the hello's updateCheck, core.lua)
+do
+  local st = require('beamngEarth/settings')
+  T.check(st.SCHEMA.updateCheck.kind == 'bool' and st.SCHEMA.updateCheck.default == true, 'updateCheck: a switch, on by default')
+  local onPage = false
+  for _, k in ipairs(st.ORDER) do if k == 'updateCheck' then onPage = true end end
+  T.check(onPage and not st.HIDDEN.updateCheck, 'updateCheck: on the settings page')
+end
+
 -- the map holds off the car's controls (the user, 2026-10-21: the controller drove the car behind the map): the stock
 -- groups and every driving action by name
 do
